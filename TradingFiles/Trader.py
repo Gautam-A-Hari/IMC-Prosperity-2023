@@ -6,6 +6,9 @@
 from typing import Dict, List
 from datamodel import OrderDepth, TradingState, Order
 
+import numpy as np
+import pandas as pd
+
 class Trader:
 
     def run(self, state: TradingState) -> Dict[str, List[Order]]:
