@@ -4,13 +4,12 @@
 # 3. A run function that takes a tradingstate as input and outputs a "result" dict.
 
 from typing import Dict, List
-from datamodel import OrderDepth, TradingState, Order
+from TradingFiles import OrderDepth, TradingState, Order
 
 import numpy as np
 import pandas as pd
 
 class Trader:
-	def getMovingAverage(self, OrderDepth, state: TradingState):
 
     def run(self, state: TradingState) -> Dict[str, List[Order]]:
 	    """
