@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 class Trader:
+	def getMovingAverage(self, OrderDepth):
 
     def run(self, state: TradingState) -> Dict[str, List[Order]]:
 	    """
