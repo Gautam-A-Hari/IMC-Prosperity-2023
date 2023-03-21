@@ -2,7 +2,7 @@ class DataCollector:
     import pandas as pd
     dataFrameSize = 0
     nameOfFile = ""
-    dataArr = []
+
     
     
     def __init__(self, frameSize, file) -> None:
@@ -11,8 +11,9 @@ class DataCollector:
         
         
     def readData(self):
+        dataArr = []
         File_object = open("Round_1_data\\"+self.nameOfFile, r)
-        while():
-            File_object.readline([n])
+        for line in File_object:
+                dataArr.append(line)
         File_object.close()
         
