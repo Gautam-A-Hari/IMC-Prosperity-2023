@@ -1,10 +1,9 @@
+import pandas as pd
+
 class DataCollector:
-    import pandas as pd
     dataFrameSize = 0
     nameOfFile = ""
 
-    
-    
     def __init__(self, frameSize, file) -> None:
         self.dataFrameSize = frameSize
         self.nameOfFile = file
