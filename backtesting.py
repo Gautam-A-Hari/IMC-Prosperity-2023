@@ -8,7 +8,7 @@ class MA(bt.Strategy):
 df = pd.read_csv("TradingFiles/prices_round_1_day_-1.csv")
 #print(df.head(20))
 
-df[["Banana"]]
+print(df.loc[:"Banana"])
 
 
         
