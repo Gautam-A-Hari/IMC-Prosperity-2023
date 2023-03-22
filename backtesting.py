@@ -5,10 +5,15 @@ class MA(bt.Strategy):
         self.ma_100 = bt.indicators.MovingAverageSimple(self.data,period=20,
          plotname="20 SMA")
 
-df = pd.read_csv("TradingFiles/prices_round_1_day_-1.csv")
-#print(df.head(20))
+df = pd.read_csv("TradingFiles/prices_round_1_day_-1.csv", sep=";")
+print(df.head(20))
 
-print(df.loc[:"Banana"])
+#print(df.loc[df.product == "BANANAS"])
+pd.set_option("display.max_columns", None)
+
+df_bananas = df.loc[df['product']=="BANANAS"]
+df_pearls = df.loc[df['product']=="PEARLS"]
+
 
 
         
