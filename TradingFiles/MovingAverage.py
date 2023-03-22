@@ -11,7 +11,7 @@ import pandas as pd
 	print(df.head)"""
 
 #pd.set_option("display.max_row")
-df = pd.read_csv("TradingFiles\prices_round_1_day_-1.csv")
+df = pd.read_csv("TradingFiles\prices_round_1_day_-1.csv", sep=";")
 print(df.head(20))
 
 
