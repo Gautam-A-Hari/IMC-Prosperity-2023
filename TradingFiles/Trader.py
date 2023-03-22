@@ -16,5 +16,6 @@ class Trader:
 		Takes all buy and sell orders for all symbols as an input,
 		and outputs a list of orders to be sent
 		"""
+		
         result = {}
         return result
