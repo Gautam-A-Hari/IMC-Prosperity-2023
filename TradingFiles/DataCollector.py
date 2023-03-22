@@ -23,8 +23,7 @@ class DataCollector():
         ProductNameFiltered = df[(df['Shipping Type'] == productName)]
 
     def takePriceData(productName):
-        df = pd.read_csv("TradingFiles\prices_round_2_day_-1.csv", sep=";")
-
+        df = pd.read_csv("TradingFiles\\prices_round_2_day_-1.csv", sep=";")
         pd.set_option("display.max_columns", None)
         df = df.fillna(0)
         df_bananas = df.loc[df['product']=="BANANAS"]
@@ -55,7 +54,6 @@ class DataCollector():
 
         # print(bid_list[0])
         df_output["pct_change"] = df["mid_price"].pct_change()
-        # print(df_bananas.head(50))
         output = df_output.head(50)["mid_price"]
         print(output)
         return output

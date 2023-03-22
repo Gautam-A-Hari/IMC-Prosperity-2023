@@ -6,8 +6,8 @@ from DataCollector import *
 import numpy as np
 import pandas as pd
 
-volatilityArr = []
-priceWindow = DataCollector.takePriceData('COCONUT')
+# volatilityArr = []
+DataCollector.takePriceData("BANANA")
 
 # class getMovingVolatility():
 #     def getStdDev(self, priceWindow):

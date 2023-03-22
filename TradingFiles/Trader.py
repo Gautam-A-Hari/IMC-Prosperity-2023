@@ -1,22 +1,58 @@
 from typing import Dict, List
+
 # from datamodel import OrderDepth, TradingState, Order
 from OrderDepth import *
 from TradingState import *
 from Order import *
-from DataCollector import *
+# from DataCollector import *
+import pandas as pd
 
 class Trader:
-    def zScore(self, state: TradingState, DataCollector):
-        # calculate mean here:
-		   itemMidPriceArr = DataCollector.takePriceData('COCONUT')
-           # mean()
-        
-		# calculate std deviation here:
+    def takePriceData(product):
+        df = pd.read_csv("TradingFiles\\prices_round_2_day_-1.csv", sep=";")
+        pd.set_option("display.max_columns", None)
+        df = df.fillna(0)
+        if (product == "COCONUTS"):
+			      df_output = df.loc[df['product']=="COCONUTS"]
+            elif (product =="PINA_COLADAS"):
+              df_output = df.loc[df['product']=="PINA_COLADAS"]
+        df_output = df_output[["timestamp", 
+        "product","bid_price_1", "bid_volume_1",
+                                "ask_price_1", "ask_volume_1",
+                                "mid_price", "profit_and_loss"]]
+        bid_list = []
+        for bid in df_output["bid_price_1"]:
+            bid_list.append(bid)
 
-		# calculate zscore here: 
+        bid_vol_list = []
+        for bid_vol in df_output["bid_volume_1"]:
+            bid_vol_list.append(bid_vol)
 
-		# return zscore here:
+        ask_list = []
+        for ask in df_output["ask_price_1"]:
+            ask_list.append(ask)
 
+        ask_vol_list = []
+        for ask_vol in df_output["ask_volume_1"]:
+            ask_vol_list.append(ask_vol)
+
+        df_output["pct_change"] = df["mid_price"].pct_change()
+        output = df_output.head(50)["mid_price"]
+        print(output)
+        return output
+    def zScore(self, state: TradingState, product):
+    	for product in state.order_depths.keys():
+            # Check if the current product is the 'COCONUTS' product, only then run the order logic
+            if product == 'COCONUTS':
+                  meanVal = self.takePriceData('COCONUT').mean()
+                  stdDev = self.takePriceData('COCONUT').std()
+                  z = (product - meanVal) / stdDev 
+                  return z
+            elif product == 'PINA_COLADAS':
+                 meanVal = self.takePriceData('COCONUT').mean()
+                 stdDev = self.takePriceData('COCONUT').std()
+                 z = (product - meanVal) / stdDev 
+                 return z
     # def pairsTrading(self, state: TradingState):
     #     # OBJECTIVE: spread log(a) - log(b)
 	# 	# a and b refer to stock prices of product a and b respectively
@@ -40,7 +76,6 @@ def run(self, state: TradingState) -> Dict[str, List[Order]]:
 
             # Check if the current product is the 'COCONUTS' product, only then run the order logic
             if product == 'COCONUTS':
-
                 # Retrieve the Order Depth containing all the market BUY and SELL orders for COCONUT
                 order_depth: OrderDepth = state.order_depths[product]
 
