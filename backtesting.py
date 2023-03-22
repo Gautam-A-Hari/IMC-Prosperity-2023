@@ -44,7 +44,4 @@ print(bid_list[0])
 df_bananas["pct_change"] = df["mid_price"].pct_change()
 print(df_bananas.head(50))
 
-for 
-
-
         
