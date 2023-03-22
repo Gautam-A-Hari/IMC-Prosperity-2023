@@ -11,5 +11,9 @@ import pandas as pd
 	print(df.head)"""
 
 #pd.set_option("display.max_row")
-df = pd.read_csv("TradingFiles\prices_round_1_day_-1.csv")
-print(df.head(20))
+
+nameOfFile = "prices_round_1_day_-1.csv"
+dataFrame = pd.read_csv("Round_1_data//"+nameOfFile, sep=";")
+print(dataFrame.head(20))
+
+print(dataFrame.product)

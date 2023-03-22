@@ -3,8 +3,6 @@ import backtrader as bt
 class DataCollector():
     dataFrameSize = 0
     nameOfFile = ""
-    param_fast = 50
-    param_slow = 100
     def __init__(self, frameSize, file) -> None:
         self.dataFrameSize = frameSize
         self.nameOfFile = file
@@ -14,15 +12,16 @@ class DataCollector():
 
     def readData(self):
         dataArr = []
-        df = pd.read_csv(self.nameOfFile, sep=";")
-        df.loc(["mid_price"])
-        for line in df:
-                dataArr.append(line)
-        # df.close()
-        return dataArr
+        return pd.read_csv(self.nameOfFile, sep=";")
+        # for line in df:
+        #         dataArr.append(line)
+        # return dataArr
     
     
     def filterDataByProduct(self,productName):
+        
+        df = self.readData()
+        ProductNameFiltered = df[(df['Shipping Type'] == productName)]
         
         
     
