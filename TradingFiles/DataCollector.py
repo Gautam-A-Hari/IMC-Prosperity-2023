@@ -10,8 +10,8 @@ class DataCollector():
         self.nameOfFile = file
         
         
-    def log(self, txt, dt=None)->None:
-        print(f"{dt} {txt}")
+    def log(self, txt, dateTime=None)->None:
+        print(f"{dateTime} {txt}")
 
     def readData(self):
         dataArr = []
@@ -22,7 +22,7 @@ class DataCollector():
         return dataArr
 
 if __name__ == "__main__":
-    data = DataCollector(50, "/Users/tringuyen/Documents/GitHub/IMC-Prosperity-2023/Round_1_data/prices_round_1_day_0.csv")
+    data = DataCollector(50, "Round_1_data\prices_round_1_day_-2.csv")
     
     print(data.readData())
 
