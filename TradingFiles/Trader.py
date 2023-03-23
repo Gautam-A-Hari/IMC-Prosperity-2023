@@ -6,16 +6,18 @@ from TradingState import *
 from Order import *
 # from DataCollector import *
 import pandas as pd
+import numpy as np
+import math
 
 class Trader:
-    def takePriceData(product):
+    def takePriceData(state: TradingState, product): # fix the inputs, product is incorrect
         df = pd.read_csv("TradingFiles\\prices_round_2_day_-1.csv", sep=";")
         pd.set_option("display.max_columns", None)
         df = df.fillna(0)
         if (product == "COCONUTS"):
 			      df_output = df.loc[df['product']=="COCONUTS"]
-            elif (product =="PINA_COLADAS"):
-              df_output = df.loc[df['product']=="PINA_COLADAS"]
+        # elif (product =="PINA_COLADAS"):
+        #       df_output = df.loc[df['product']=="PINA_COLADAS"]
         df_output = df_output[["timestamp", 
         "product","bid_price_1", "bid_volume_1",
                                 "ask_price_1", "ask_volume_1",
@@ -41,31 +43,38 @@ class Trader:
         print(output)
         return output
     
-    def zScoreAndSpread(self, state: TradingState, product):
-    	for product in state.order_depths.keys():
+	# logs the score and spread value over time.
+    def zScoreAndSpread(self, state: TradingState) -> Dict[int]:
+        arrCoconutsPrices = np.array()
+        arrPinaColadasPrices = np.array()
+        for product in state.order_depths.keys():
             # Check if the current product is the 'COCONUTS' product, only then run the order logic
             if product == 'COCONUTS':
                   meanVal = self.takePriceData('COCONUT').mean()
                   stdDev = self.takePriceData('COCONUT').std()
-                  z = (product - meanVal) / stdDev 
+                  z = (product - meanVal) / stdDev
+                  # fix spread calculations to retrieve prices from other product
                   OrderDepth = state.order_depths[product]
                   best_ask = min(state.order_depth.sell_orders.keys())
                   best_bid = max(state.order_depth.buy_orders.keys())
                   coconutsPrice = (best_bid + best_ask) / 2
-                  spread = best_ask - best_bid
-                 # spread = log(COCONUTS prices) - log(PINA_COLADAS prices)
-                  return z, spread, coconutsPrice
+                  arrCoconutsPrices.append(coconutsPrice)
+                  spread = math.log(coconutsPrice) - (0.8 * math.log(self.arrPinaColadasPrices(-1)))
+                  # spread = log(COCONUTS prices) - log(PINA_COLADAS prices)
+                  return z, spread, arrCoconutsPrices
             elif product == 'PINA_COLADAS':
-                 meanVal = self.takePriceData('COCONUT').mean()
-                 stdDev = self.takePriceData('COCONUT').std()
-                 z = (product - meanVal) / stdDev 
-                 # fix spread calculations to retrieve prices from other product
-                 best_ask = min(state.order_depth.sell_orders.keys())
-                 best_bid = max(state.order_depth.buy_orders.keys())
-                 spread = best_ask - best_bid
-                 pinaColadasPrice = (best_bid + best_ask) / 2
-                 # spread = log(PINA_COLADAS prices) - log(COCONUTS prices)
-                 return z, spread, pinaColadasPrice
+                  meanVal = self.takePriceData('PINA_COLADAS').mean()
+                  stdDev = self.takePriceData('PINA_COLADAS').std()
+                  z = (product - meanVal) / stdDev 
+                  # fix spread calculations to retrieve prices from other product
+                  best_ask = min(state.order_depth.sell_orders.keys())
+                  best_bid = max(state.order_depth.buy_orders.keys())
+                  # spread = best_ask - best_bid
+                  pinaColadasPrice = (best_bid + best_ask) / 2
+                  arrPinaColadasPrices.append(pinaColadasPrice)
+                  spread = math.log(pinaColadasPrice) - (0.8 * math.log(self.arrCoconutsPrices(-1)))
+                  # spread = log(PINA_COLADAS price) - log(COCONUTS price)
+                  return z, spread, arrPinaColadasPrices
          
     # def pairsTrading(self, state: TradingState):
     #     # OBJECTIVE: spread log(a) - log(b)
