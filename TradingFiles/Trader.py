@@ -12,7 +12,6 @@ import math
 class Trader:
     def takePriceData(state: TradingState, product): # fix the inputs, product is incorrect
         df = pd.read_csv("TradingFiles\\prices_round_2_day_-1.csv", sep=";")
-        pd.set_option("display.max_columns", None)
         df = df.fillna(0)
         if (product == "COCONUTS"):
 			      df_output = df.loc[df['product']=="COCONUTS"]
