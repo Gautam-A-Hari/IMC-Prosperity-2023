@@ -40,19 +40,33 @@ class Trader:
         output = df_output.head(50)["mid_price"]
         print(output)
         return output
-    def zScore(self, state: TradingState, product):
+    
+    def zScoreAndSpread(self, state: TradingState, product):
     	for product in state.order_depths.keys():
             # Check if the current product is the 'COCONUTS' product, only then run the order logic
             if product == 'COCONUTS':
                   meanVal = self.takePriceData('COCONUT').mean()
                   stdDev = self.takePriceData('COCONUT').std()
                   z = (product - meanVal) / stdDev 
-                  return z
+                  OrderDepth = state.order_depths[product]
+                  best_ask = min(state.order_depth.sell_orders.keys())
+                  best_bid = max(state.order_depth.buy_orders.keys())
+                  coconutsPrice = (best_bid + best_ask) / 2
+                  spread = best_ask - best_bid
+                 # spread = log(COCONUTS prices) - log(PINA_COLADAS prices)
+                  return z, spread, coconutsPrice
             elif product == 'PINA_COLADAS':
                  meanVal = self.takePriceData('COCONUT').mean()
                  stdDev = self.takePriceData('COCONUT').std()
                  z = (product - meanVal) / stdDev 
-                 return z
+                 # fix spread calculations to retrieve prices from other product
+                 best_ask = min(state.order_depth.sell_orders.keys())
+                 best_bid = max(state.order_depth.buy_orders.keys())
+                 spread = best_ask - best_bid
+                 pinaColadasPrice = (best_bid + best_ask) / 2
+                 # spread = log(PINA_COLADAS prices) - log(COCONUTS prices)
+                 return z, spread, pinaColadasPrice
+         
     # def pairsTrading(self, state: TradingState):
     #     # OBJECTIVE: spread log(a) - log(b)
 	# 	# a and b refer to stock prices of product a and b respectively
