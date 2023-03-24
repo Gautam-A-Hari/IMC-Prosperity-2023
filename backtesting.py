@@ -5,6 +5,17 @@ import pandas as pd
 #        self.ma_100 = bt.indicators.MovingAverageSimple(self.data,period=20,
 #         plotname="20 SMA")
 nameOfFile = "prices_round_1_day_-1.csv"
+<<<<<<< HEAD
+dataFrame = pd.read_csv("/Users/tringuyen/Documents/GitHub/IMC-Prosperity-2023/Round_1_data/prices_round_1_day_-2.csv", sep=";")
+print(dataFrame.head(20))
+
+
+df = pd.read_csv("TradingFiles/prices_round_1_day_-1.csv", sep=";")
+print(df.head(20))
+
+#print(df.loc[df.product == "BANANAS"])
+pd.set_option("display.max_columns", None)
+=======
 #dataFrame = pd.read_csv("TradingFiles\\"+nameOfFile, sep=";")
 #print(dataFrame.head(20))
 
@@ -15,10 +26,15 @@ df = pd.read_csv("TradingFiles/prices_round_1_day_-1.csv", sep=";")
 pd.set_option("display.max_columns", None)
 df = df.fillna(0)
 
+>>>>>>> parent of 6d4c394 (wrong code)
 
 df_bananas = df.loc[df['product']=="BANANAS"]
 df_pearls = df.loc[df['product']=="PEARLS"]
 
+<<<<<<< HEAD
+
+print(df_bananas)
+=======
 df_bananas = df_bananas[["timestamp", 
 "product","bid_price_1", "bid_volume_1",
                         "ask_price_1", "ask_volume_1",
@@ -45,3 +61,4 @@ df_bananas["pct_change"] = df["mid_price"].pct_change()
 print(df_bananas.head(50))
 
         
+>>>>>>> parent of 6d4c394 (wrong code)
