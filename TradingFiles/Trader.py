@@ -1,9 +1,6 @@
 from typing import Dict, List
 
 from datamodel import OrderDepth, TradingState, Order
-from OrderDepth import *
-from TradingState import *
-from Order import *
 # from DataCollector import *
 import pandas as pd
 import numpy as np
