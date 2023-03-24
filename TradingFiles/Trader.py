@@ -118,7 +118,7 @@ class Trader:
                 # the difference is that it finds the highest bid (buy order)
                 # If the price of the order is higher than the fair value
                 # This is an opportunity to sell at a premium
-                if len(order_depth_pina.buy_orders)  n!= 0:
+                if len(order_depth_pina.buy_orders)  != 0:
                     best_bid_pina = max(order_depth_pina.buy_orders.keys())
                     best_bid_volume_pina = order_depth_pina.buy_orders[best_bid_pina]
                     if best_bid_pina > acceptable_price_pina:
