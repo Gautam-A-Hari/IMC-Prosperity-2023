@@ -23,20 +23,30 @@ class Trader:
             if total_coconut + total_pina <= -20000:
                 print("Hit the panic button ! out of business")
                 break
-
+            if (state.own_trades.keys()) > 300:
+                order_depth: OrderDepth = state.order_depths[product]
+                best_bid_sell = max(order_depth.buy_orders.keys())
+                best_bid_sell_volume = order_depth.buy_orders[best_bid_sell]
+                orders.append(Order(product, best_bid_sell, -best_bid_sell_volume))
+                result[product] = orders
             # Check if the current product is the 'COCONUTS' product, only then run the order logic
-            if product == 'COCONUTS':
+            elif product == 'COCONUTS':
                 # Retrieve the Order Depth containing all the market BUY and SELL orders for COCONUT
                 order_depth: OrderDepth = state.order_depths[product]
 
                 # Initialize the list of Orders to be sent as an empty list
                 orders: list[Order] = []
-
+                if (state.own_trades.keys()) > 300:
+                
+                    best_bid_sell = max(order_depth.buy_orders.keys())
+                    best_bid_sell_volume = order_depth.buy_orders[best_bid_sell]
+                    orders.append(Order(product, best_bid_sell, -best_bid_sell_volume))
+                    result[product] = orders
                 # Define a fair value for the PEARLS.
                 # Note that this value of 1 is just a dummy value, you should likely change it!
 
                 # If statement checks if there are any SELL orders in the PEARLS market
-                if len(order_depth.sell_orders) > 0:
+                elif len(order_depth.sell_orders) > 0:
                     best_ask = min(order_depth.sell_orders.keys())
                     best_bid = max(order_depth.buy_orders.keys())
                     acceptable_price = (best_ask + best_bid) / 2 
@@ -108,7 +118,7 @@ class Trader:
                 # the difference is that it finds the highest bid (buy order)
                 # If the price of the order is higher than the fair value
                 # This is an opportunity to sell at a premium
-                if len(order_depth_pina.buy_orders) != 0:
+                if len(order_depth_pina.buy_orders)  n!= 0:
                     best_bid_pina = max(order_depth_pina.buy_orders.keys())
                     best_bid_volume_pina = order_depth_pina.buy_orders[best_bid_pina]
                     if best_bid_pina > acceptable_price_pina:
