@@ -24,13 +24,14 @@ class Trader:
                 print("Hit the panic button ! out of business")
                 break
             # Check if the current product is the 'COCONUTS' product, only then run the order logic
-            if product == 'COCONUTS':
+            if product == '':
                 # Retrieve the Order Depth containing all the market BUY and SELL orders for COCONUT
                 order_depth: OrderDepth = state.order_depths[product]
 
                 # Initialize the list of Orders to be sent as an empty list
                 orders: list[Order] = []
-                if len(state.own_trades[product]) > 600:
+                """
+                if (state.position["PRODUCT1"]) > 600:
                 
                     best_bid_sell = max(order_depth.buy_orders.keys())
                     best_bid_sell_volume = order_depth.buy_orders[best_bid_sell]
@@ -38,12 +39,12 @@ class Trader:
                     result[product] = orders
                 # Define a fair value for the PEARLS.
                 # Note that this value of 1 is just a dummy value, you should likely change it!
-
+                """
                 # If statement checks if there are any SELL orders in the PEARLS market
-                elif len(order_depth.sell_orders) > 0:
+                if len(order_depth.sell_orders) > 0:
                     best_ask = min(order_depth.sell_orders.keys())
                     best_bid = max(order_depth.buy_orders.keys())
-                    acceptable_price = (best_ask + best_bid) / 2 
+                    acceptable_price = 2 #(best_ask + best_bid) / 2 
                     # Sort all the available sell orders by their price,
                     # and select only the sell order with the lowest price
                     best_ask = min(order_depth.sell_orders.keys())
@@ -64,9 +65,10 @@ class Trader:
                 # the difference is that it finds the highest bid (buy order)
                 # If the price of the order is higher than the fair value
                 # This is an opportunity to sell at a premium
-                elif len(order_depth.buy_orders) != 0:
+                if len(order_depth.buy_orders) != 0:
                     best_bid = max(order_depth.buy_orders.keys())
                     best_bid_volume = order_depth.buy_orders[best_bid]
+                    acceptable_price = 2
                     if best_bid > acceptable_price:
                         print("SELL", str(best_bid_volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, -best_bid_volume))
@@ -83,21 +85,22 @@ class Trader:
 
                 # Initialize the list of Orders to be sent as an empty list
                 orders_pina: list[Order] = []
-                if len(state.own_trades[product]) > 300:
+                """
+                if state.position["PRODUCT2"] > 300:
                 
                     best_bid_sell = max(order_depth_pina.buy_orders.keys())
                     best_bid_sell_volume = order_depth_pina.buy_orders[best_bid_sell]
                     orders_pina.append(Order(product, best_bid_sell, -best_bid_sell_volume))
                     result[product] = orders_pina
-
+                """
                 # Define a fair value for the PEARLS.
                 # Note that this value of 1 is just a dummy value, you should likely change it!
 
                 # If statement checks if there are any SELL orders in the PEARLS(Pina) market
-                elif len(order_depth_pina.sell_orders) > 0:
+                if len(order_depth_pina.sell_orders) > 0:
                     best_ask_pina = min(order_depth_pina.sell_orders.keys())
                     best_bid_pina = max(order_depth_pina.buy_orders.keys())
-                    acceptable_price_pina = (best_ask + best_bid) * 0.5
+                    acceptable_price_pina = 2 #(best_ask + best_bid) * 0.5
                     # Sort all the available sell orders by their price,
                     # and select only the sell order with the lowest price
                 # best_ask_pina = min(order_depth_pina.sell_orders.keys())
@@ -121,6 +124,7 @@ class Trader:
                 elif len(order_depth_pina.buy_orders)  != 0:
                     best_bid_pina = max(order_depth_pina.buy_orders.keys())
                     best_bid_volume_pina = order_depth_pina.buy_orders[best_bid_pina]
+                    acceptable_price_pina = 2
                     if best_bid_pina > acceptable_price_pina:
                         print("SELL", str(best_bid_volume_pina) + "x", best_bid_pina)
                         orders_pina.append(Order(product, best_bid_pina, -best_bid_volume_pina))
