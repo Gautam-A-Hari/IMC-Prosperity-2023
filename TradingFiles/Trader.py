@@ -24,7 +24,7 @@ class Trader:
                 print("Hit the panic button ! out of business")
                 break
             # Check if the current product is the 'COCONUTS' product, only then run the order logic
-            if product == '':
+            if product == "COCONUTS":
                 # Retrieve the Order Depth containing all the market BUY and SELL orders for COCONUT
                 order_depth: OrderDepth = state.order_depths[product]
 
@@ -44,10 +44,9 @@ class Trader:
                 if len(order_depth.sell_orders) > 0:
                     best_ask = min(order_depth.sell_orders.keys())
                     best_bid = max(order_depth.buy_orders.keys())
-                    acceptable_price = 2 #(best_ask + best_bid) / 2 
+                    acceptable_price = best_ask * 1.01 
                     # Sort all the available sell orders by their price,
                     # and select only the sell order with the lowest price
-                    best_ask = min(order_depth.sell_orders.keys())
                     best_ask_volume = order_depth.sell_orders[best_ask]
 
                     # Check if the lowest ask (sell order) is lower than the above defined fair value
@@ -68,7 +67,7 @@ class Trader:
                 if len(order_depth.buy_orders) != 0:
                     best_bid = max(order_depth.buy_orders.keys())
                     best_bid_volume = order_depth.buy_orders[best_bid]
-                    acceptable_price = 2
+                    acceptable_price = 1
                     if best_bid > acceptable_price:
                         print("SELL", str(best_bid_volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, -best_bid_volume))
@@ -100,15 +99,13 @@ class Trader:
                 if len(order_depth_pina.sell_orders) > 0:
                     best_ask_pina = min(order_depth_pina.sell_orders.keys())
                     best_bid_pina = max(order_depth_pina.buy_orders.keys())
-                    acceptable_price_pina = 2 #(best_ask + best_bid) * 0.5
+                    acceptable_price_pina = 1 #(best_ask + best_bid) * 0.5
                     # Sort all the available sell orders by their price,
                     # and select only the sell order with the lowest price
                 # best_ask_pina = min(order_depth_pina.sell_orders.keys())
                     best_ask_volume_pina = order_depth_pina.sell_orders[best_ask_pina]
-
                     # Check if the lowest ask (sell order) is lower than the above defined fair value
                     if best_ask_pina < acceptable_price_pina:
-
                         # In case the lowest ask is lower than our fair value,
                         # This presents an opportunity for us to buy cheaply
                         # The code below therefore sends a BUY order at the price level of the ask,
@@ -124,7 +121,7 @@ class Trader:
                 elif len(order_depth_pina.buy_orders)  != 0:
                     best_bid_pina = max(order_depth_pina.buy_orders.keys())
                     best_bid_volume_pina = order_depth_pina.buy_orders[best_bid_pina]
-                    acceptable_price_pina = 2
+                    acceptable_price_pina = 1
                     if best_bid_pina > acceptable_price_pina:
                         print("SELL", str(best_bid_volume_pina) + "x", best_bid_pina)
                         orders_pina.append(Order(product, best_bid_pina, -best_bid_volume_pina))
