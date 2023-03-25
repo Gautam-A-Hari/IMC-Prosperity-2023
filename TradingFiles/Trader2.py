@@ -17,7 +17,7 @@ class Logger:
         }, cls=ProsperityEncoder, separators=(",", ":"), sort_keys=True))
 
         self.logs = ""
-
+        
 logger = Logger()
 
 class Trader:
@@ -67,5 +67,4 @@ class Trader:
             # These possibly contain buy or sell orders for PEARLS
             # Depending on the logic above
             logger.flush(state, orders)  
-            return orders  
-        return result
+        return orders
