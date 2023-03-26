@@ -25,15 +25,12 @@ class Trader:
             order_depth: OrderDepth = state.order_depths[product]
             # Initialize the list of Orders to be sent as an empty list
             orders: list[Order] = []
-            
             # If statement checks if there are any SELL orders in the PEARLS market
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
                 acceptable_price = best_ask * 1.01
-                if product == 'BANANAS':
-                    self.past_data['BANANAS']['acc_price'].append(acceptable_price)
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
-                if best_ask < acceptable_price:
+                if best_ask - mid_price < 2:
                     # In case the lowest ask is lower than our fair value,
                     # This presents an opportunity for us to buy cheaply
                     # The code below therefore sends a BUY order at the price level of the ask,
@@ -55,6 +52,7 @@ class Trader:
                     orders.append(Order(product, best_bid, 20))
             # Add all the above orders to the result dict
             orders1[product] = orders
+
             # Return the dict of orders
             # These possibly contain buy or sell orders for PEARLS
             # Depending on the logic above
