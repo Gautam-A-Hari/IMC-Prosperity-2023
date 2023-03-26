@@ -1,5 +1,5 @@
 import json
-from datamodel import Order, Symbol, TradingState, ProsperityEncoder
+from datamodel import Order, Symbol, TradingState, ProsperityEncoder, OrderDepth
 from typing import Any
 
 class Logger:
@@ -39,9 +39,10 @@ class Trader:
             # If statement checks if there are any SELL orders in the PEARLS market
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
-                acceptable_price = best_ask * 1.01
+                best_bid = max(order_depth.buy_orders.keys())
+                acceptable_price = (best_ask + best_bid)/2
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
-                if best_ask < acceptable_price:
+                if best_ask - acceptable_price>-10:
                     # In case the lowest ask is lower than our fair value,
                     # This presents an opportunity for us to buy cheaply
                     # The code below therefore sends a BUY order at the price level of the ask,
@@ -56,8 +57,9 @@ class Trader:
             # This is an opportunity to sell at a premium
             if len(order_depth.buy_orders) > 0:
                 best_bid = max(order_depth.buy_orders.keys())
-                acceptable_price = best_bid * 0.99
-                if best_bid > acceptable_price:
+                best_ask = min(order_depth.sell_orders.keys())
+                acceptable_price = (best_bid + best_bid) / 2 
+                if acceptable_price - acceptable_price > -10:
                     logger.print("SELL", str(20) + "x", best_bid)
                     orders.append(Order(product, best_bid, 20))
                     balance += 20 * best_bid
