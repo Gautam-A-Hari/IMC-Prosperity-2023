@@ -41,9 +41,13 @@ class Trader:
             # If statement checks if there are any SELL orders in the PEARLS market
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
-                acceptable_price = best_ask * 1.01
+                best_bid = max(order_depth.buy_orders.keys())
+                mid_price = (best_ask + best_bid) / 2
+                
+                if product == 'COCONUTS':
+                    coconuts_price = self.coconuts_price.append(best_ask)
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
-                if best_ask < acceptable_price:
+                if best_ask - mid_price < 2:
                     # In case the lowest ask is lower than our fair value,
                     # This presents an opportunity for us to buy cheaply
                     # The code below therefore sends a BUY order at the price level of the ask,
@@ -65,6 +69,7 @@ class Trader:
                     balance += 20 * best_bid
             # Add all the above orders to the result dict
             orders1[product] = orders
+        
 
             # Return the dict of orders
             # These possibly contain buy or sell orders for PEARLS
