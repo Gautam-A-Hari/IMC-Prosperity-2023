@@ -38,6 +38,11 @@ class Trader:
             order_depth: OrderDepth = state.order_depths[product]
             # Initialize the list of Orders to be sent as an empty list
             orders: list[Order] = []
+
+            if state.position["DIVING_GEAR"] > 50:
+                break
+            if state.position["BERRIES"] > 250:
+                break
             # If statement checks if there are any SELL orders in the PEARLS market
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
