@@ -1,13 +1,8 @@
 from datamodel import Order, Symbol, TradingState
 from typing import Any
 class Trader:
-    def run(self, state: TradingState) -> dict[str, list[Order]]:
-        """
-        Only method required. It takes all buy and sell orders for all symbols as an input,
-        and outputs a list of orders to be sent
-        """
-        # Initialize past data collector
-        self.past_data = {'BANANAS': {'acc_price': []},
+    # Initialize past data collector
+    past_data = {'BANANAS': {'acc_price': []},
                           'COCONUTS': {'acc_price': []},
                           'PINA_COLADAS': {'acc_price': []},
                           'PEARLS': {'position': []},
@@ -17,6 +12,12 @@ class Trader:
                           'DIP': {'acc_price': []},
                           'PICNIC_BASKET': {'acc_price': []},
                           'BAGUETTE': {'acc_price': []}}
+    def run(self, state: TradingState) -> dict[str, list[Order]]:
+        """
+        Only method required. It takes all buy and sell orders for all symbols as an input,
+        and outputs a list of orders to be sent
+        """
+        
         # Initialize the method output dict as an empty dict
         orders1 = {}
         # Iterate over all the keys (the available products) contained in the order depths
@@ -29,8 +30,10 @@ class Trader:
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
                 acceptable_price = best_ask * 1.01
+                if product == 'BANANAS':
+                    self.past_data['BANANAS']['acc_price'].append(acceptable_price)
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
-                if best_ask - mid_price < 2:
+                if best_ask < acceptable_price:
                     # In case the lowest ask is lower than our fair value,
                     # This presents an opportunity for us to buy cheaply
                     # The code below therefore sends a BUY order at the price level of the ask,
