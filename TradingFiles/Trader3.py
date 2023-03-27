@@ -30,6 +30,8 @@ class Trader:
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
                 acceptable_price = round(best_ask * 1.01)
+                if len(self.past_data[product]) == 50:
+                    self.past_data[product].pop(0)
                 self.past_data[product].append(acceptable_price)
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
                 if best_ask < acceptable_price:
@@ -47,6 +49,8 @@ class Trader:
             if len(order_depth.buy_orders) > 0:
                 best_bid = max(order_depth.buy_orders.keys())
                 acceptable_price = round(best_bid * 0.99)
+                if len(self.past_data[product]) == 50:
+                    self.past_data[product].pop(0)
                 self.past_data[product].append(acceptable_price)
                 if best_bid > acceptable_price:
                     print("SELL", str(20) + "x", best_bid)
