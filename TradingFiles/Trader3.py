@@ -1,5 +1,25 @@
-from datamodel import Order, Symbol, TradingState
+import json
+from datamodel import Order, ProsperityEncoder, Symbol, TradingState
 from typing import Any
+
+class Logger:
+    def __init__(self) -> None:
+        self.logs = ""
+
+    def print(self, *objects: Any, sep: str = " ", end: str = "\n") -> None:
+        self.logs += sep.join(map(str, objects)) + end
+
+    def flush(self, state: TradingState, orders: dict[Symbol, list[Order]]) -> None:
+        print(json.dumps({
+            "state": state,
+            "orders": orders,
+            "logs": self.logs,
+        }, cls=ProsperityEncoder, separators=(",", ":"), sort_keys=True))
+
+        self.logs = ""
+
+logger = Logger()
+
 class Trader:
     # Initialize past data collector
     past_data = {'BANANAS': [],
@@ -30,18 +50,27 @@ class Trader:
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
                 acceptable_price = round(best_ask * 1.01)
-                if len(self.past_data[product]) == 50:
-                    self.past_data[product].pop(0)
-                self.past_data[product].append(acceptable_price)
+                best_ask_volume = order_depth.sell_orders[best_ask]
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
-                if best_ask < acceptable_price:
-                    # In case the lowest ask is lower than our fair value,
-                    # This presents an opportunity for us to buy cheaply
-                    # The code below therefore sends a BUY order at the price level of the ask,
-                    # with the same quantity
-                    # We expect this order to trade with the sell order
-                    print("BUY", str(20) + "x", best_ask)
-                    orders.append(Order(product, best_ask, 20))
+                if (len(self.past_data[product])) == 50:
+                    self.past_data[product].pop(0)
+                    self.past_data[product].append(acceptable_price)
+                    if ((self.past_data[product][1] / self.past_data[product][49]) * 100) > - 0.2:
+                        if best_ask < acceptable_price:
+                            # In case the lowest ask is lower than our fair value,
+                            # This presents an opportunity for us to buy cheaply
+                            # The code below therefore sends a BUY order at the price level of the ask,
+                            # with the same quantity
+                            # We expect this order to trade with the sell order
+                            logger.print("BUY", str(20) + "x", best_ask)
+                            orders.append(Order(product, best_ask, 20))
+                    else:
+                        logger.print("SELL", str(20) + "x", best_ask)
+                        orders.append(Order(product, best_ask, 20))  
+                else:
+                    self.past_data[product].append(acceptable_price)
+                    logger.print("BUY", str(1) + "x", best_ask)
+                    orders.append(Order(product, best_ask, 1))
             # The below code block is similar to the one above,
             # the difference is that it finds the highest bid (buy order)
             # If the price of the order is higher than the fair value
@@ -49,12 +78,21 @@ class Trader:
             if len(order_depth.buy_orders) > 0:
                 best_bid = max(order_depth.buy_orders.keys())
                 acceptable_price = round(best_bid * 0.99)
-                if len(self.past_data[product]) == 50:
+                best_bid_volume = order_depth.buy_orders[best_bid]
+                if (len(self.past_data[product])) == 50:
                     self.past_data[product].pop(0)
-                self.past_data[product].append(acceptable_price)
-                if best_bid > acceptable_price:
-                    print("SELL", str(20) + "x", best_bid)
-                    orders.append(Order(product, best_bid, 20))
+                    self.past_data[product].append(acceptable_price)
+                    if ((self.past_data[product][1] / self.past_data[product][49]) * 100) > - 0.2:
+                        if best_bid > acceptable_price:
+                            logger.print("SELL", str(20) + "x", best_bid)
+                            orders.append(Order(product, best_bid, 20))
+                    else:
+                        logger.print("BUY", str(20) + "x", best_bid)
+                        orders.append(Order(product, best_bid, 20)) 
+                else:
+                    self.past_data[product].append(acceptable_price)
+                    logger.print("SELL", str(1) + "x", best_bid)
+                    orders.append(Order(product, best_bid, 1))
             # Add all the above orders to the result dict
             orders1[product] = orders
 
@@ -62,6 +100,5 @@ class Trader:
             # These possibly contain buy or sell orders for PEARLS
             # Depending on the logic above
             # Print last/most recent acc_price
-            if (len(self.past_data[product])) > 51:
-                print("apple" + self.past_data[product][-50])
+        logger.flush(state, orders)
         return orders1
