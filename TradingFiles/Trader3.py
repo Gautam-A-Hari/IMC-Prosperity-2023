@@ -55,18 +55,28 @@ class Trader:
                 if (len(self.past_data[product])) == 50:
                     self.past_data[product].pop(0)
                     self.past_data[product].append(acceptable_price)
-                    if ((self.past_data[product][1] / self.past_data[product][49]) * 100) > - 0.2:
+                    change = ((self.past_data[product][1] / self.past_data[product][49]) * 100)
+                    if change > 1.2:
                         if best_ask < acceptable_price:
                             # In case the lowest ask is lower than our fair value,
                             # This presents an opportunity for us to buy cheaply
                             # The code below therefore sends a BUY order at the price level of the ask,
                             # with the same quantity
                             # We expect this order to trade with the sell order
-                            logger.print("BUY", str(20) + "x", best_ask)
-                            orders.append(Order(product, best_ask, 20))
+                            logger.print("BUY", str(-best_ask_volume) + "x", best_ask)
+                            orders.append(Order(product, best_ask, -best_ask_volume))
+                    elif change > 0.8:
+                        if best_ask < acceptable_price:
+                            # In case the lowest ask is lower than our fair value,
+                            # This presents an opportunity for us to buy cheaply
+                            # The code below therefore sends a BUY order at the price level of the ask,
+                            # with the same quantity
+                            # We expect this order to trade with the sell order
+                            logger.print("BUY", str(30) + "x", best_ask)
+                            orders.append(Order(product, best_ask, 30))
                     else:
-                        logger.print("SELL", str(20) + "x", best_ask)
-                        orders.append(Order(product, best_ask, 20))  
+                        logger.print("SELL", str(30) + "x", best_ask)
+                        orders.append(Order(product, best_ask, 30))  
                 else:
                     self.past_data[product].append(acceptable_price)
                     logger.print("BUY", str(1) + "x", best_ask)
@@ -82,13 +92,18 @@ class Trader:
                 if (len(self.past_data[product])) == 50:
                     self.past_data[product].pop(0)
                     self.past_data[product].append(acceptable_price)
-                    if ((self.past_data[product][1] / self.past_data[product][49]) * 100) > - 0.2:
+                    change = (self.past_data[product][1] / self.past_data[product][49])
+                    if change > 1.2:
                         if best_bid > acceptable_price:
-                            logger.print("SELL", str(20) + "x", best_bid)
-                            orders.append(Order(product, best_bid, 20))
+                            logger.print("SELL", str(best_bid_volume) + "x", best_bid)
+                            orders.append(Order(product, best_bid, -best_bid_volume))
+                    elif change > 0.8:
+                        if best_bid > acceptable_price:
+                            logger.print("SELL", str(30) + "x", best_bid)
+                            orders.append(Order(product, best_bid, 30))
                     else:
-                        logger.print("BUY", str(20) + "x", best_bid)
-                        orders.append(Order(product, best_bid, 20)) 
+                        logger.print("BUY", str(30) + "x", best_bid)
+                        orders.append(Order(product, best_bid, 30)) 
                 else:
                     self.past_data[product].append(acceptable_price)
                     logger.print("SELL", str(1) + "x", best_bid)
