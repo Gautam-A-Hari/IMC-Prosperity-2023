@@ -1,58 +1,7 @@
-import json
-from datamodel import Order, ProsperityEncoder, Symbol, TradingState
+
+from datamodel import Order, Symbol, TradingState
 from typing import Any
 
-class Logger:
-    def __init__(self) -> None:
-        self.logs = ""
-
-    def print(self, *objects: Any, sep: str = " ", end: str = "\n") -> None:
-        self.logs += sep.join(map(str, objects)) + end
-
-    def flush(self, state: TradingState, orders: dict[Symbol, list[Order]]) -> None:
-        print(json.dumps({
-            "state": self.compress_state(state),
-            "orders": self.compress_orders(orders),
-            "logs": self.logs,
-        }, cls=ProsperityEncoder, separators=(",", ":"), sort_keys=True))
-
-        self.logs = ""
-
-    def compress_state(self, state: TradingState) -> dict[str, Any]:
-        listings = []
-        for listing in state.listings.values():
-            listings.append([listing["symbol"], listing["product"], listing["denomination"]])
-
-        order_depths = {}
-        for symbol, order_depth in state.order_depths.items():
-            order_depths[symbol] = [order_depth.buy_orders, order_depth.sell_orders]
-
-        return {
-            "t": state.timestamp,
-            "l": listings,
-            "od": order_depths,
-            "ot": self.compress_trades(state.own_trades),
-            "mt": self.compress_trades(state.market_trades),
-            "p": state.position,
-            "o": state.observations,
-        }
-
-    def __init__(self) -> None:
-        self.logs = ""
-
-    def print(self, *objects: Any, sep: str = " ", end: str = "\n") -> None:
-        self.logs += sep.join(map(str, objects)) + end
-
-    def flush(self, state: TradingState, orders: dict[Symbol, list[Order]]) -> None:
-        print(json.dumps({
-            "state": state,
-            "orders": orders,
-            "logs": self.logs,
-        }, cls=ProsperityEncoder, separators=(",", ":"), sort_keys=True))
-
-        self.logs = ""
-
-logger = Logger()
 
 class Trader:
     # Initialize past data collector
@@ -105,14 +54,14 @@ class Trader:
                             # The code below therefore sends a BUY order at the price level of the ask,
                             # with the same quantity
                             # We expect this order to trade with the sell order
-                        logger.print("BUY", str(-volume) + "x", best_ask)
+                        print("BUY", str(-volume) + "x", best_ask)
                         orders.append(Order(product, best_ask, -volume))
                     else:
-                        logger.print("SELL", str(volume) + "x", best_ask)
+                        print("SELL", str(volume) + "x", best_ask)
                         orders.append(Order(product, best_ask, volume))
                 else:
                     self.past_data[product]['ask_price'].append(best_ask)
-                    logger.print("BUY", str(1) + "x", best_ask)
+                    print("BUY", str(1) + "x", best_ask)
                     orders.append(Order(product, best_ask, 1))
             # The below code block is similar to the one above,
             # the difference is that it finds the highest bid (buy order)
@@ -125,14 +74,14 @@ class Trader:
                     self.past_data[product]['bid_price'].append(best_bid)
                     change = (self.past_data[product]['bid_price'][0] / self.past_data[product]['bid_price'][9])
                     if change > 0.995:
-                        logger.print("SELL", str(volume) + "x", best_bid)
+                        print("SELL", str(volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, volume))
                     else:
-                        logger.print("BUY", str(volume) + "x", best_bid)
+                        print("BUY", str(volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, -volume))
                 else:
                     self.past_data[product]['bid_price'].append(best_bid)
-                    logger.print("SELL", str(1) + "x", best_bid)
+                    print("SELL", str(1) + "x", best_bid)
                     orders.append(Order(product, best_bid, 1))
             # Add all the above orders to the result dict
             orders1[product] = orders
@@ -141,5 +90,7 @@ class Trader:
             # These possibly contain buy or sell orders for PEARLS
             # Depending on the logic above
             # Print last/most recent acc_price
-        logger.flush(state, orders1)
+        # logger.flush(state, orders1)
+        print(self.past_data[product]["bid_price"])
+        print(self.past_data[product]["ask_price"])
         return orders1
