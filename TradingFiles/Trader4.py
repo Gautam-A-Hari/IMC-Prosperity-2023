@@ -123,7 +123,7 @@ class Trader:
                 if (len(self.past_data[product]['bid_price'])) == 10:
                     self.past_data[product]['bid_price'].pop(0)
                     self.past_data[product]['bid_price'].append(best_bid)
-                    change = (self.past_data[product][0] / self.past_data[product][9])
+                    change = (self.past_data[product]['bid_price'][0] / self.past_data[product]['bid_price'][9])
                     if change > 0.995:
                         logger.print("SELL", str(volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, volume))
