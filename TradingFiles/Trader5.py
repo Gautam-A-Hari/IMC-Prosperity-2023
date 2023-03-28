@@ -75,16 +75,16 @@ class Trader:
                  'PICNIC_BASKET': [],
                  'BAGUETTE': []}
     
-    orderLimit = {'BANANAS': 10,
-                  'COCONUTS': 300,
-                  'PINA_COLADAS': 150,
-                  'PEARLS': 10,
-                  'BERRIES': 125,
-                  'DIVING_GEAR': 25,
-                  'UKULELE': 35,
-                  'DIP': 150,
-                  'PICNIC_BASKET': 35,
-                  'BAGUETTE': 75}
+    orderLimit = {'BANANAS': 9,
+                  'COCONUTS': 299,
+                  'PINA_COLADAS': 149,
+                  'PEARLS': 9,
+                  'BERRIES': 124,
+                  'DIVING_GEAR': 24,
+                  'UKULELE': 34,
+                  'DIP': 149,
+                  'PICNIC_BASKET': 34,
+                  'BAGUETTE': 74}
 
     def run(self, state: TradingState) -> dict[str, list[Order]]:
         """
@@ -97,10 +97,11 @@ class Trader:
         # Iterate over all the keys (the available products) contained in the order depths
         for product in state.order_depths.keys():
             # Retrieve the Order Depth containing all the market BUY and SELL orders for COCONUT
-            order_depth = state.order_depths[product]
+            order_depth: OrderDepth = state.order_depths[product]
             # Initialize the list of Orders to be sent as an empty list
             orders: list[Order] = []
             # If statement checks if there are any SELL orders in the PEARLS market
+            volume = self.orderLimit[product]
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
@@ -108,17 +109,17 @@ class Trader:
                     self.past_data[product].pop(0)
                     self.past_data[product].append(best_ask)
                     change = (self.past_data[product][0] / self.past_data[product][9])
-                    if change > 0.9:
+                    if change > 0.995:
                             # In case the lowest ask is lower than our fair value,
                             # This presents an opportunity for us to buy cheaply
                             # The code below therefore sends a BUY order at the price level of the ask,
                             # with the same quantity
                             # We expect this order to trade with the sell order
-                        logger.print("BUY", str(30) + "x", best_ask)
-                        orders.append(Order(product, best_ask, 30))
+                        logger.print("BUY", str(-volume) + "x", best_ask)
+                        orders.append(Order(product, best_ask, -volume))
                     else:
                         logger.print("SELL", str(volume) + "x", best_ask)
-                        orders.append(Order(product, best_ask, -volume))
+                        orders.append(Order(product, best_ask, volume))
                 else:
                     self.past_data[product].append(best_ask)
                     logger.print("BUY", str(1) + "x", best_ask)
@@ -129,16 +130,15 @@ class Trader:
             # This is an opportunity to sell at a premium
             if len(order_depth.buy_orders) > 0:
                 best_bid = max(order_depth.buy_orders.keys())
-                
                 if (len(self.past_data[product])) == 10:
                     self.past_data[product].pop(0)
                     self.past_data[product].append(best_bid)
                     change = (self.past_data[product][0] / self.past_data[product][9])
                     if change > 0.995:
                         logger.print("SELL", str(volume) + "x", best_bid)
-                        orders.append(Order(product, best_bid, -volume))
+                        orders.append(Order(product, best_bid, volume))
                     else:
-                        logger.print("BUY", str(-volume) + "x", best_bid)
+                        logger.print("BUY", str(volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, -volume))
                 else:
                     self.past_data[product].append(best_bid)
