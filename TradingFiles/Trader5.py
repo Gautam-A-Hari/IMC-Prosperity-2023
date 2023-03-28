@@ -75,16 +75,16 @@ class Trader:
                  'PICNIC_BASKET': [],
                  'BAGUETTE': []}
     
-    orderLimit = {'BANANAS': 10,
-                  'COCONUTS': 300,
-                  'PINA_COLADAS': 150,
-                  'PEARLS': 10,
-                  'BERRIES': 125,
-                  'DIVING_GEAR': 25,
-                  'UKULELE': 35,
-                  'DIP': 150,
-                  'PICNIC_BASKET': 35,
-                  'BAGUETTE': 75}
+    orderLimit = {'BANANAS': 9,
+                  'COCONUTS': 299,
+                  'PINA_COLADAS': 149,
+                  'PEARLS': 9,
+                  'BERRIES': 124,
+                  'DIVING_GEAR': 24,
+                  'UKULELE': 34,
+                  'DIP': 149,
+                  'PICNIC_BASKET': 34,
+                  'BAGUETTE': 74}
 
     def run(self, state: TradingState) -> dict[str, list[Order]]:
         """
@@ -119,11 +119,11 @@ class Trader:
                         orders.append(Order(product, best_ask, -volume))
                     else:
                         logger.print("SELL", str(volume) + "x", best_ask)
-                        orders.append(Order(product, best_ask, -volume))
+                        orders.append(Order(product, best_ask, volume))
                 else:
                     self.past_data[product].append(best_ask)
-                    logger.print("BUY", str(-volume) + "x", best_ask)
-                    orders.append(Order(product, best_ask, -volume))
+                    logger.print("BUY", str(1) + "x", best_ask)
+                    orders.append(Order(product, best_ask, 1))
             # The below code block is similar to the one above,
             # the difference is that it finds the highest bid (buy order)
             # If the price of the order is higher than the fair value
@@ -136,14 +136,14 @@ class Trader:
                     change = (self.past_data[product][0] / self.past_data[product][9])
                     if change > 0.995:
                         logger.print("SELL", str(volume) + "x", best_bid)
-                        orders.append(Order(product, best_bid, -volume))
+                        orders.append(Order(product, best_bid, volume))
                     else:
-                        logger.print("BUY", str(-volume) + "x", best_bid)
+                        logger.print("BUY", str(volume) + "x", best_bid)
                         orders.append(Order(product, best_bid, -volume))
                 else:
                     self.past_data[product].append(best_bid)
-                    logger.print("SELL", str(volume) + "x", best_bid)
-                    orders.append(Order(product, best_bid, -volume))
+                    logger.print("SELL", str(1) + "x", best_bid)
+                    orders.append(Order(product, best_bid, 1))
             # Add all the above orders to the result dict
             orders1[product] = orders
 
