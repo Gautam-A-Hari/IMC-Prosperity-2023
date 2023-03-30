@@ -6,6 +6,7 @@ class Logger:
     def __init__(self) -> None:
         self.logs = ""
 
+
     def print(self, *objects: Any, sep: str = " ", end: str = "\n") -> None:
         self.logs += sep.join(map(str, objects)) + end
 
@@ -75,16 +76,17 @@ class Trader:
                  'PICNIC_BASKET': [],
                  'BAGUETTE': []}
     
-    orderLimit = {'BANANAS': 9,
-                  'COCONUTS': 299,
-                  'PINA_COLADAS': 149,
-                  'PEARLS': 9,
-                  'BERRIES': 124,
-                  'DIVING_GEAR': 24,
-                  'UKULELE': 34,
-                  'DIP': 149,
-                  'PICNIC_BASKET': 34,
-                  'BAGUETTE': 74}
+
+    orderLimit = {'BANANAS': 20,
+                  'COCONUTS': 600,
+                  'PINA_COLADAS': 300,
+                  'PEARLS': 20,
+                  'BERRIES': 250,
+                  'DIVING_GEAR': 50,
+                  'UKULELE': 70,
+                  'DIP': 300,
+                  'PICNIC_BASKET': 70,
+                  'BAGUETTE': 150}
 
     def run(self, state: TradingState) -> dict[str, list[Order]]:
         """
@@ -97,19 +99,41 @@ class Trader:
         # Iterate over all the keys (the available products) contained in the order depths
         for product in state.order_depths.keys():
             # Retrieve the Order Depth containing all the market BUY and SELL orders for COCONUT
-            order_depth: OrderDepth = state.order_depths[product]
+            order_depth = state.order_depths[product]
             # Initialize the list of Orders to be sent as an empty list
             orders: list[Order] = []
             # If statement checks if there are any SELL orders in the PEARLS market
             volume = self.orderLimit[product]
+            
+            # The below code block is similar to the one above,
+            # the difference is that it finds the highest bid (buy order)
+            # If the price of the order is higher than the fair value
+            # This is an opportunity to sell at a premium
+            if len(order_depth.buy_orders) > 0:
+                best_bid = max(order_depth.buy_orders.keys())
+                if (len(self.past_data[product])) == 20:
+                    self.past_data[product].pop(0)
+                    self.past_data[product].append(best_bid)
+                    change = (self.past_data[product][0] / self.past_data[product][19])
+                    if change > 0.9:
+                        logger.print("SELL", str(volume) + "x", best_bid)
+                        orders.append(Order(product, best_bid, -volume))
+                    else:
+                        logger.print("BUY", str(-volume) + "x", best_bid)
+                        orders.append(Order(product, best_bid, -volume))
+                else:
+                    self.past_data[product].append(best_bid)
+                    logger.print("SELL", str(1) + "x", best_bid)
+                    orders.append(Order(product, best_bid, -1))
+            # Add all the above orders to the result dict
             if len(order_depth.sell_orders) > 0:
                 best_ask = min(order_depth.sell_orders.keys())
                 # Check if the lowest ask (sell order) is lower than the above defined fair value
-                if (len(self.past_data[product])) == 10:
+                if (len(self.past_data[product])) == 20:
                     self.past_data[product].pop(0)
                     self.past_data[product].append(best_ask)
-                    change = (self.past_data[product][0] / self.past_data[product][9])
-                    if change > 0.995:
+                    change = (self.past_data[product][0] / self.past_data[product][19])
+                    if change > 0.9:
                             # In case the lowest ask is lower than our fair value,
                             # This presents an opportunity for us to buy cheaply
                             # The code below therefore sends a BUY order at the price level of the ask,
@@ -119,32 +143,11 @@ class Trader:
                         orders.append(Order(product, best_ask, -volume))
                     else:
                         logger.print("SELL", str(volume) + "x", best_ask)
-                        orders.append(Order(product, best_ask, volume))
+                        orders.append(Order(product, best_ask, -volume))
                 else:
                     self.past_data[product].append(best_ask)
                     logger.print("BUY", str(1) + "x", best_ask)
-                    orders.append(Order(product, best_ask, 1))
-            # The below code block is similar to the one above,
-            # the difference is that it finds the highest bid (buy order)
-            # If the price of the order is higher than the fair value
-            # This is an opportunity to sell at a premium
-            if len(order_depth.buy_orders) > 0:
-                best_bid = max(order_depth.buy_orders.keys())
-                if (len(self.past_data[product])) == 10:
-                    self.past_data[product].pop(0)
-                    self.past_data[product].append(best_bid)
-                    change = (self.past_data[product][0] / self.past_data[product][9])
-                    if change > 0.995:
-                        logger.print("SELL", str(volume) + "x", best_bid)
-                        orders.append(Order(product, best_bid, volume))
-                    else:
-                        logger.print("BUY", str(volume) + "x", best_bid)
-                        orders.append(Order(product, best_bid, -volume))
-                else:
-                    self.past_data[product].append(best_bid)
-                    logger.print("SELL", str(1) + "x", best_bid)
-                    orders.append(Order(product, best_bid, 1))
-            # Add all the above orders to the result dict
+                    orders.append(Order(product, best_ask, -1))
             orders1[product] = orders
 
             # Return the dict of orders
